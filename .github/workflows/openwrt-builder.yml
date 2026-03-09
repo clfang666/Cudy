@@ -146,7 +146,7 @@ jobs:
       with:
         tag_name: ${{ steps.tag.outputs.release_tag }}
         body_path: release.txt
-        files: ${{ env.FIRMWARE }}/*
+        files: ${{ env.FIRMWARE }}/*sysupgrade*
         append_body: true
 
     - name: Delete workflow runs
