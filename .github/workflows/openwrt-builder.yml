@@ -16,11 +16,6 @@ on:
   repository_dispatch:
   workflow_dispatch:
 
-# 🟢 新增：赋予 GitHub Actions 读写权限，彻底解决 403 报错无法创建 Release 的问题
-permissions:
-  contents: write
-  actions: write
-
 env:
   REPO_URL: https://github.com/padavanonly/immortalwrt-mt798x-6.6
   REPO_BRANCH: openwrt-24.10-6.6
