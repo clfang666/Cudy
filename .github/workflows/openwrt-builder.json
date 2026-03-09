@@ -20,7 +20,6 @@ env:
   REPO_URL: https://github.com/padavanonly/immortalwrt-mt798x-6.6
   REPO_BRANCH: openwrt-24.10-6.6
   FEEDS_CONF: feeds.conf.default
-  # 🔴 删除了全局的 CONFIG_FILE，移到了下方矩阵内动态加载
   DIY_P1_SH: diy-part1.sh
   DIY_P2_SH: diy-part2.sh
   UPLOAD_BIN_DIR: false
@@ -30,17 +29,15 @@ env:
 
 jobs:
   build:
-    name: Build ${{ matrix.device }} # 🟢 动态显示当前编译的任务名
+    name: Build ${{ matrix.device }}
     runs-on: ubuntu-22.04
     
-    # 🟢 新增：矩阵策略配置
     strategy:
-      fail-fast: false  # 即使其中一个编译失败，另一个也会继续完成
+      fail-fast: false
       matrix:
-        device:[TR3000V1_MOD, TR3000V1_256M] # 你的两个配置文件前缀
+        device:[TR3000V1_MOD, TR3000V1_256M]
 
     env:
-      # 🟢 根据矩阵自动读取 TR3000V1_MOD.config 或 TR3000V1_256M.config
       CONFIG_FILE: ${{ matrix.device }}.config 
 
     steps:
@@ -116,7 +113,7 @@ jobs:
       uses: actions/upload-artifact@main
       if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
       with:
-        name: OpenWrt_bin_${{ matrix.device }}_${{ env.FILE_DATE }} # 🟢 区分压缩包名字
+        name: OpenWrt_bin_${{ matrix.device }}_${{ env.FILE_DATE }}
         path: openwrt/bin
 
     - name: Organize files
@@ -132,14 +129,13 @@ jobs:
       uses: actions/upload-artifact@main
       if: steps.organize.outputs.status == 'success' && !cancelled()
       with:
-        name: OpenWrt_firmware_${{ matrix.device }}_${{ env.FILE_DATE }} # 🟢 区分压缩包名字
+        name: OpenWrt_firmware_${{ matrix.device }}_${{ env.FILE_DATE }}
         path: ${{ env.FIRMWARE }}
 
     - name: Generate release tag
       id: tag
       if: env.UPLOAD_RELEASE == 'true' && !cancelled()
       run: |
-        # 🟢 关键修改：将发布时间精确到“天”，确保两个设备能合并到一个 Release 页面中
         echo "release_tag=$(date +"%Y.%m.%d")" >> $GITHUB_OUTPUT
         touch release.txt
         echo "Automated build for ${{ matrix.device }}" >> release.txt[ ${UPLOAD_GOFILE} = true && ${{ steps.gofile.outputs.url }} ] && echo "🔗 [GoFile](${{ steps.gofile.outputs.url }})" >> release.txt
@@ -157,7 +153,7 @@ jobs:
 
     - name: Delete workflow runs
       uses: Mattraks/delete-workflow-runs@main
-      continue-on-error: true # 🟢 避免并发删除时冲突报错
+      continue-on-error: true
       with:
         retain_days: 0
         keep_minimum_runs: 2
@@ -165,7 +161,7 @@ jobs:
     - name: Remove old Releases
       uses: dev-drprasad/delete-older-releases@master
       if: env.UPLOAD_RELEASE == 'true' && !cancelled()
-      continue-on-error: true # 🟢 避免并发删除时冲突报错
+      continue-on-error: true
       with:
         keep_latest: 3
         delete_tags: true
